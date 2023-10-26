@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Task Master</string>
+    <string name="title_activity_ime_listener">imeListener</string>
+</resources>
