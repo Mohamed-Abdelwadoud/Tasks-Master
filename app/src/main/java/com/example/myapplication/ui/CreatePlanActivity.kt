@@ -421,7 +421,7 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
     }
 
     override fun handlePress(taskModel: TaskModel?) {
-        TasksPressAction(mTasksViewModel, taskModel!!, this).testhandelpress()
+        Toast.makeText(baseContext,"No Action Allowed here",Toast.LENGTH_SHORT).show()
 
 
     }
