@@ -482,10 +482,10 @@ class SettingsActivity : AppCompatActivity() {
         calendar.set(Calendar.SECOND, 0)
         val triggerTime = calendar.timeInMillis
 
-        alarmManager.setExact(
+        alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             triggerTime,
-           // AlarmManager.INTERVAL_DAY,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
 
