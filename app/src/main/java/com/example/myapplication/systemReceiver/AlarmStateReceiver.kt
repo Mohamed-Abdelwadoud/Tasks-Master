@@ -70,7 +70,7 @@ class AlarmStateReceiver : BroadcastReceiver() {
                 )
 
             } else {
-                alarmManager.setInexactRepeating(
+                alarmManager.setRepeating(
                     AlarmManager.RTC_WAKEUP,
                     triggerTime,
                     AlarmManager.INTERVAL_DAY,
