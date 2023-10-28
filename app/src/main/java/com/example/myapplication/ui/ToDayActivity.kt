@@ -16,7 +16,8 @@ import com.example.myapplication.utilities.ListSwipeAction
 import com.example.myapplication.utilities.TasksPressAction
 import com.example.myapplication.viewModel.TasksViewModel
 
-class ToDayActivity : AppCompatActivity() , TaskAdapter.TasksListener {
+class ToDayActivity : AppCompatActivity(), TaskAdapter.SingleTaskListener,
+    TaskAdapter.GroupNameListener {
     private lateinit var binding: ActivityToDayBinding
     private lateinit var taskAdaptor: TaskAdapter
     private lateinit var mTasksViewModel: TasksViewModel
@@ -24,28 +25,33 @@ class ToDayActivity : AppCompatActivity() , TaskAdapter.TasksListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityToDayBinding.inflate(layoutInflater)
-        taskAdaptor = TaskAdapter( this)
+        taskAdaptor = TaskAdapter(this, this)
 
         setContentView(binding.root)
-        binding.topLayout.filterICON.visibility=View.GONE
-        binding.topLayout.passedTasksICOn.visibility=View.GONE
+        binding.topLayout.filterICON.visibility = View.GONE
+
 
 
         initUI()
+        binding.topLayout.passedTasksICOn.setOnClickListener {
+            val a = Intent(this, PassedAllTasksActivity::class.java)
+            startActivity(a)
+            finish()
+        }
 
-        binding.topLayout.toDayICON.setOnClickListener(View.OnClickListener {
-          Toast.makeText(baseContext,"This is ToDays Tasks",Toast.LENGTH_SHORT).show()
-        })
-        binding.topLayout.settingsICON.setOnClickListener(View.OnClickListener {
+        binding.topLayout.toDayICON.setOnClickListener {
+            Toast.makeText(baseContext, "This is ToDays Tasks", Toast.LENGTH_SHORT).show()
+        }
+        binding.topLayout.settingsICON.setOnClickListener {
             val a = Intent(this, SettingsActivity::class.java)
             startActivity(a)
             finish()
-        })
-        binding.topLayout.achievementICON.setOnClickListener(View.OnClickListener {
+        }
+        binding.topLayout.achievementICON.setOnClickListener {
             val a = Intent(this, AchievementActivity::class.java)
             startActivity(a)
             finish()
-        })
+        }
 
     }
 
@@ -53,7 +59,6 @@ class ToDayActivity : AppCompatActivity() , TaskAdapter.TasksListener {
         super.onStart()
         stopService()
     }
-
 
 
     private fun initUI() {
@@ -64,44 +69,35 @@ class ToDayActivity : AppCompatActivity() , TaskAdapter.TasksListener {
         mTasksViewModel.getTasks.observe(this, Observer { tasks ->
             taskAdaptor.addTasks(tasks)
             taskAdaptor.showToDay(true)
-            if (taskAdaptor.getAllTasks()==0){
-                binding.mainTxt.text="No Dead line for today "
+            if (taskAdaptor.getAllTasks() == 0) {
+                binding.mainTxt.text = "No Dead line for today "
             }
         })
-        ListSwipeAction.getItemTouchHelper(this,mTasksViewModel).attachToRecyclerView(binding.TasksRecycler)
+        ListSwipeAction.getItemTouchHelper(this, mTasksViewModel)
+            .attachToRecyclerView(binding.TasksRecycler)
 
         //  mTasksViewModel.deleteAllTasks()
 
     }
 
 
-
-
-
     override fun handleGroupClick(groupName: String) {
 
-        val intent = Intent(this,CreatePlanActivity::class.java)
-        intent.putExtra("group",groupName)
+        val intent = Intent(this, CreatePlanActivity::class.java)
+        intent.putExtra("group", groupName)
         startActivity(intent)
 
 
-
-
-
-
     }
 
-    override fun handleLongPress(taskModel: TaskModel?) {
-        Toast.makeText(baseContext,"${taskModel!!.Done}",Toast.LENGTH_SHORT).show()
-    }
 
     override fun handlePress(taskModel: TaskModel?) {
-        TasksPressAction(mTasksViewModel,taskModel!!,this).testhandelpress()
+        TasksPressAction(mTasksViewModel, taskModel!!, this).testhandelpress()
 
     }
 
 
-    private fun stopService(){
+    private fun stopService() {
         val intent = Intent(baseContext, AlarmMangerService::class.java)
         stopService(intent)
     }

@@ -62,21 +62,21 @@ abstract class ListSwipeAction() {
                     if (direction == ItemTouchHelper.LEFT) {
                         val holder = viewHolder as TaskAdapter.TaskHolder
                         // holder.setAlarm()
-                        if (holder.layoutitem().LastDate.before(toDay)) {
+                        if (holder.layOutItem().LastDate.before(toDay)) {
                             Toast.makeText(
                                 myContext?.get(),
                                 "cant create alarm  for passed Tasks",
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            testAddAlarm(holder.layoutitem())
+                            testAddAlarm(holder.layOutItem())
 
                         }
                         holder.bindingAdapter?.notifyDataSetChanged()
 
                     } else {
                         val holder = viewHolder as TaskAdapter.TaskHolder
-                        testHandleDeleteTask(holder.layoutitem())
+                        testHandleDeleteTask(holder.layOutItem())
                         // holder.deleteTask()
                         holder.bindingAdapter?.notifyDataSetChanged()
 

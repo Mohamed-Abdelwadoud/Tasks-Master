@@ -16,7 +16,7 @@ interface TaskDao {
     suspend fun insertSingleTask(task: TaskModel): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlanTasks(@NonNull planTasks: List<TaskModel>)
+    suspend fun insertPlanTasks(planTasks: List<TaskModel>)
 
     @Query("select * from TaskModel ")
     fun getLiveTasks(): LiveData<List<TaskModel>>
@@ -25,7 +25,7 @@ interface TaskDao {
     suspend fun deleteAll()
 
     @Query("update TaskModel set LastDate =:lastDate, RemainTime =:remainTime where Header =:header")
-    suspend fun updateDeadLine( lastDate :Calendar, remainTime:String ,@NonNull header: String)
+    suspend fun updateDeadLine( lastDate :Calendar, remainTime:String ,header: String)
 
     @Query("delete from TaskModel where Header =:header")
     suspend fun deleteByHeader(header:String)
@@ -40,10 +40,9 @@ interface TaskDao {
     suspend fun groupNameExisted(group: String?): Boolean
 
     @Query("UPDATE TaskModel SET Done = :isDone where Header = :header")
-    suspend fun makeTaskDone(isDone: Boolean,@NonNull header: String)
+    suspend fun makeTaskDone(isDone: Boolean,header: String)
 
-    @Query("select * from TaskModel where Done =:isDone")
-     fun getALLDone(isDone: Boolean):LiveData<List<TaskModel>>
+
 
 
 

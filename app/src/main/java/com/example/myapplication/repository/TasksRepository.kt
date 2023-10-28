@@ -48,9 +48,7 @@ class TasksRepository(private val taskDao: TaskDao) {
         taskDao.makeTaskDone(isDone,header)
     }
 
-     fun getDoneTasks(isDone: Boolean):LiveData<List<TaskModel>>{
-         return taskDao.getALLDone(isDone)
-    }
+
 
 
 }

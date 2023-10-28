@@ -36,7 +36,8 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
+class MainActivity : AppCompatActivity(), TaskAdapter.SingleTaskListener,
+    TaskAdapter.GroupNameListener {
 
 
     private val toDay = Calendar.getInstance()
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        taskAdaptor = TaskAdapter(this)
+        taskAdaptor = TaskAdapter(this, this)
 
 
         // alarmManager = baseContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager // now
@@ -114,7 +115,7 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
         })
 
         binding.topLayout.passedTasksICOn.setOnClickListener(View.OnClickListener {
-            val a = Intent(this, PassedTasksActivity::class.java)
+            val a = Intent(this, PassedAllTasksActivity::class.java)
             startActivity(a)
         })
 
@@ -129,14 +130,6 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
 
     override fun onResume() {
         super.onResume()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            if (alarmManager.canScheduleExactAlarms()) {
-//                Log.d("wwwwwwwwwwwwwww", "onResume:  true granted ")
-//            } else {
-//                Log.d("wwwwwwwwwwwwwww", "onResume:  false denied ")
-//            }
-//        }
-
         val alarmMangerServiceIntent = Intent(this, AlarmMangerService::class.java)
         stopService(alarmMangerServiceIntent)
     }
@@ -229,14 +222,7 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
 
 
     override fun handleGroupClick(groupName: String) {
-//        // go to group Activity
-//        Toast.makeText(baseContext,groupName,Toast.LENGTH_LONG).show()
-//       val  alpha = Intent(this,GroupActivity::class.java)
-////        val bundle =Bundle()
-////        bundle.putSerializable("adaptor",taskAdaptor)
-////        bundle.putString("groupName",groupName)
-////        alpha.putExtras(bundle)
-//        startActivity(alpha)
+
         val intent = Intent(this, CreatePlanActivity::class.java)
         intent.putExtra("group", groupName)
         startActivity(intent)
@@ -244,9 +230,6 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
 
     }
 
-    override fun handleLongPress(taskModel: TaskModel?) {
-        Toast.makeText(baseContext, "${taskModel!!.Done}", Toast.LENGTH_SHORT).show()
-    }
 
     override fun handlePress(taskModel: TaskModel?) {
         TasksPressAction(mTasksViewModel, taskModel!!, this).testhandelpress()
@@ -273,76 +256,6 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TasksListener {
 
     }
 
-    private fun oldCallBack() {
-        var simpleCallBack: ItemTouchHelper.SimpleCallback =
-            object :
-                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
-
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    if (direction == ItemTouchHelper.LEFT) {
-                        val holder = viewHolder as TaskAdapter.TaskHolder
-//                    holder.setAlarm()
-                    } else {
-                        val holder = viewHolder as TaskAdapter.TaskHolder
-//                    holder.deleteTask()
-
-                    }
-                }
-
-                override fun onChildDraw(
-                    c: Canvas,
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    dX: Float,
-                    dY: Float,
-                    actionState: Int,
-                    isCurrentlyActive: Boolean
-                ) {
-                    RecyclerViewSwipeDecorator.Builder(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        dX,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                        .addSwipeRightActionIcon(R.drawable.ic_baseline_delete_24)
-                        .addSwipeRightLabel("Delete")
-                        .addSwipeRightBackgroundColor(Color.Red.toArgb())
-                        .addSwipeLeftActionIcon(R.drawable.ic_baseline_alarm_24)
-                        .addSwipeLeftBackgroundColor(Color.Magenta.toArgb())
-                        .addSwipeLeftLabel("Alarm")
-
-                        .create()
-                        .decorate()
-                    super.onChildDraw(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        dX,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                }
-
-            }
-
-        /////////////////////////// dec
-        //        val itemTouchHelper = ItemTouchHelper(simpleCallBack)
-//
-//        itemTouchHelper.attachToRecyclerView(binding.TasksRecycler)
-
-    }
 
 
 }

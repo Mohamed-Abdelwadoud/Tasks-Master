@@ -5,177 +5,181 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.CreatePlanActivity">
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/groupNameLinearCheck"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/groupNameLinearCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="category :"
-            android:textColor="@color/black" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="category :"
+                    android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/groupName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:hint="GroupName"
-            android:maxLength="10"
-            android:maxLines="1" />
-
-
-        <CheckBox
-            android:id="@+id/groupNameCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false" />
-
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/multiRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/groupNameLinearCheck"
-        tools:listitem="@layout/task_item_layout" />
+                <EditText
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:id="@+id/groupNameEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:hint="GroupName"
+                    android:maxLength="15"
+                    android:maxLines="1" />
 
 
-    <androidx.cardview.widget.CardView
-
-        android:id="@+id/mainCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="5dp"
-        app:cardPreventCornerOverlap="true"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/multiRecyclerView">
-
-        <EditText
-            android:id="@+id/taskHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
-            android:layout_marginStart="8dp"
-            android:hint="Header"
-            android:maxLength="20"
-            android:maxLines="1"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-
-            />
-
-        <EditText
-            android:id="@+id/taskInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="5dp"
-            android:hint="Info"
-            android:maxLength="20"
-            android:maxLines="1"
-            android:textColor="@color/black" />
-
-        <TextView
-
-            android:id="@+id/DeadLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="ClickToSet"
-            android:textColor="@color/black" />
+                <CheckBox
+                    android:id="@+id/groupNameCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false" />
 
 
-        <TextView
-            android:id="@+id/remainTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
-            android:hint="Remain Time"
-            android:textColor="@color/black" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/multiRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/groupNameLinearCheck"
+                tools:listitem="@layout/task_item_layout" />
 
 
-    </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+
+                android:id="@+id/mainCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/multiRecyclerView">
+
+                <EditText
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:id="@+id/taskHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="8dp"
+                    android:hint="Header"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+
+                    />
+
+                <EditText
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:id="@+id/taskInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:hint="Info"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:textColor="@color/black" />
+
+                <TextView
+
+                    android:id="@+id/DeadLine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:hint="ClickToSet"
+                    android:textColor="@color/black" />
 
 
-    <TextView
+                <TextView
+                    android:id="@+id/remainTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:hint="Remain Time"
+                    android:textColor="@color/black" />
 
-        android:id="@+id/creatSmallTasksText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="IF UR task Is a big plain , u may need it devided into small tasks
- click On Me see"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mainCard" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addMinTask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_add_24"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/creatSmallTasksText"
-        tools:layout_editor_absoluteY="91dp"
+            </androidx.cardview.widget.CardView>
 
-        />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/cancellallMin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="10dp"
-        android:src="@drawable/ic_baseline_cancel_24"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toStartOf="@id/addMinTask"
-        app:layout_constraintHorizontal_bias="0.954"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/creatSmallTasksText"
-        tools:layout_editor_absoluteY="91dp" />
+            <TextView
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ConfirmTaskBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/teal_200"
-        android:hint="Confirm Task"
-        android:src="@drawable/ic_baseline_done_24"
-        android:textColorHint="@color/black"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toStartOf="@+id/cancellallMin"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/creatSmallTasksText" />
+                android:id="@+id/creatSmallTasksText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="if your task is a long term task, you may need it minimize it into small tasks just Click"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mainCard" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/addMinTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_add_24"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.954"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/creatSmallTasksText"
+                tools:layout_editor_absoluteY="91dp"
+
+                />
+
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/ConfirmTaskBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/teal_200"
+                android:hint="Confirm Task"
+                android:src="@drawable/ic_baseline_done_24"
+                android:textColorHint="@color/black"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@+id/cancellallMin"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/creatSmallTasksText" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

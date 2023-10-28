@@ -1,7 +1,6 @@
 package com.example.myapplication.viewModel
 
 import android.app.Application
-import androidx.compose.ui.text.input.ImeAction.Companion.Done
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -11,7 +10,6 @@ import com.example.myapplication.repository.TasksRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 
 class TasksViewModel(application: Application) : AndroidViewModel(application) {
     val getTasks: LiveData<List<TaskModel>>
@@ -40,7 +38,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addNewplan(planTasks: List<TaskModel>) {
+    fun addNewPlan(planTasks: List<TaskModel>) {
         viewModelScope.launch(Dispatchers.IO)
         { repository.insertPlan(planTasks) }
     }
@@ -77,9 +75,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         repository.taskISDone(isDone,header)
     }
 
-     fun getMyDoneTasks(isDone: Boolean):LiveData<List<TaskModel>>{
-         return repository.getDoneTasks(isDone)
-    }
+
 
 
 

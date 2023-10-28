@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.PassedTasksActivity">
+    tools:context=".ui.PassedAllTasksActivity">
 
 
 
@@ -17,6 +17,17 @@
         app:layout_constraintEnd_toEndOf="parent"
 
         />
+    <TextView
+
+        android:id="@+id/mainTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="Passed Tasks "
+        android:textStyle="italic|bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topLayout" />
 
     <androidx.recyclerview.widget.RecyclerView
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -27,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topLayout"
+        app:layout_constraintTop_toBottomOf="@id/mainTxt"
         app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/task_item_layout"
         />

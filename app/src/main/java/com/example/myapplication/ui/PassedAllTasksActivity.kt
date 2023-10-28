@@ -14,9 +14,9 @@ import com.example.myapplication.utilities.TasksPressAction
 import com.example.myapplication.viewModel.TasksViewModel
 
 
-class PassedTasksActivity : AppCompatActivity(), TaskAdapter.TasksListener {
+class PassedAllTasksActivity : AppCompatActivity(), TaskAdapter.SingleTaskListener {
     private lateinit var binding: ActivityPassedtasksBinding
-    private val taskAdaptor = TaskAdapter(this)
+    private val taskAdaptor = TaskAdapter(null, this)
     private lateinit var mTasksViewModel: TasksViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,23 +27,28 @@ class PassedTasksActivity : AppCompatActivity(), TaskAdapter.TasksListener {
         initUI()
 
 
-        binding.topLayout.passedTasksICOn.setOnClickListener(View.OnClickListener {
+        binding.topLayout.passedTasksICOn.setOnClickListener {
             Toast.makeText(baseContext, "This All DealLine passed Tasks", Toast.LENGTH_SHORT).show()
-        })
+        }
         binding.topLayout.filterICON.visibility = View.GONE
-        binding.topLayout.achievementICON.visibility = View.GONE
+
+        binding.topLayout.achievementICON.setOnClickListener {
+            val intent = Intent(this, AchievementActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
 
-        binding.topLayout.toDayICON.setOnClickListener(View.OnClickListener {
+        binding.topLayout.toDayICON.setOnClickListener {
             val intent = Intent(this, ToDayActivity::class.java)
             startActivity(intent)
             finish()
-        })
-        binding.topLayout.settingsICON.setOnClickListener(View.OnClickListener {
+        }
+        binding.topLayout.settingsICON.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
             finish()
-        })
+        }
 
 
     }
@@ -63,12 +68,6 @@ class PassedTasksActivity : AppCompatActivity(), TaskAdapter.TasksListener {
 
     override fun handlePress(taskModel: TaskModel?) {
         TasksPressAction(mTasksViewModel, taskModel!!, this).testhandelpress()
-    }
-
-    override fun handleLongPress(taskModel: TaskModel?) {
-    }
-
-    override fun handleGroupClick(groupName: String) {
     }
 
 

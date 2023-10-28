@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.adaptors
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,10 +9,10 @@ import com.example.myapplication.databinding.TaskItemLayoutBinding
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
-class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
-    private var mListener: TasksListener
+class TaskAdapter(groupNameListener: GroupNameListener?,singleTaskListener: SingleTaskListener?) : RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
+    private lateinit var mGroupNameListener: GroupNameListener
+    private lateinit var mSingleTaskListener: SingleTaskListener
     private var tasks: ArrayList<TaskModel>? = null
     private var createTasks: ArrayList<TaskModel> = ArrayList<TaskModel>()
     private val toDay = Calendar.getInstance()
@@ -21,7 +20,13 @@ class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapt
 
 
     init {
-        this.mListener = tasksListener
+
+        if (groupNameListener != null) {
+            mGroupNameListener=groupNameListener
+        }
+        if (singleTaskListener != null) {
+            mSingleTaskListener=singleTaskListener
+        }
         cleatTimeComponent(toDay)
         notifyDataSetChanged()
     }
@@ -68,7 +73,7 @@ class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapt
     }
 
     fun doneFilter() {
-        tasks?.removeAll { it.Done }
+        tasks?.removeAll { !it.Done }
         notifyDataSetChanged()
 
     }
@@ -120,8 +125,6 @@ class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapt
                 holder.binding.breakLine.visibility = View.GONE
             }
 
-
-
             holder.binding.groupName.text = tasks?.get(position)?.GroupName
             holder.binding.taskHeader.text = tasks?.get(position)?.Header
             holder.binding.taskInfo.text = tasks?.get(position)?.Info
@@ -130,14 +133,8 @@ class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapt
                 holder.binding.remainTime.text = "0 Days left"
             } else if (tasks?.get(position)?.Done == true) {
                 holder.binding.remainTime.text = "task is done"
-//                holder.binding.cardLayout.setCardBackgroundColor(Color.Cyan)
             } else {
-                holder.binding.remainTime.text = "${
-                    tasks?.get(position)?.LastDate
-                        ?.let { daysLift(it) }
-                } Days left"
-//                holder.binding.cardLayout.setCardBackgroundColor(Color.Transparent.toArgb())
-
+                holder.binding.remainTime.text = "${tasks?.get(position)?.LastDate?.let { daysLift(it) }} Days left"
             }
 
 
@@ -174,24 +171,21 @@ class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapt
         RecyclerView.ViewHolder(binding.root) {
 
 
-        fun layoutitem(): TaskModel {
+        fun layOutItem(): TaskModel {
             return (tasks?.get(layoutPosition)!!)
         }
 
 
         init {
-            binding.root.setOnLongClickListener(View.OnLongClickListener {
-                mListener.handleLongPress(tasks?.get(layoutPosition))
-                return@OnLongClickListener true
-            })
 
-            binding.root.setOnClickListener(View.OnClickListener {
-                mListener.handlePress(tasks?.get(layoutPosition))
-            })
 
-            binding.breakLine.setOnClickListener(View.OnClickListener {
-                mListener.handleGroupClick(tasks!![layoutPosition].GroupName)
-            })
+            binding.root.setOnClickListener {
+                mSingleTaskListener.handlePress(tasks?.get(layoutPosition))
+            }
+
+            binding.breakLine.setOnClickListener {
+                mGroupNameListener.handleGroupClick(tasks!![layoutPosition].GroupName)
+            }
 
 
         }
@@ -214,16 +208,18 @@ class TaskAdapter(tasksListener: TasksListener) : RecyclerView.Adapter<TaskAdapt
         date.clear(Calendar.SECOND)
         date.clear(Calendar.MILLISECOND)
         date.clear(Calendar.MINUTE)
-
     }
 
 
-    interface TasksListener {
-        //        fun handleDeleteTask(taskModel: TaskModel)
-        fun handlePress(taskModel: TaskModel?)
-        fun handleLongPress(taskModel: TaskModel?)
+
+    interface GroupNameListener{
         fun handleGroupClick(groupName: String)
+    }
+
+    interface SingleTaskListener{
+        fun handlePress(taskModel: TaskModel?)
 
     }
+
 }
 

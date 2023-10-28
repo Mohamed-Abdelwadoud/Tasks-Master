@@ -2,44 +2,34 @@ package com.example.myapplication.ui
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
+import android.view.inputmethod.EditorInfo
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.R
 import com.example.myapplication.data.model.TaskModel
 import com.example.myapplication.databinding.ActivityCreateplanBinding
 import com.example.myapplication.ui.adaptors.TaskAdapter
 import com.example.myapplication.utilities.ListSwipeAction
-import com.example.myapplication.utilities.TasksPressAction
 import com.example.myapplication.viewModel.TasksViewModel
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
+class CreatePlanActivity : AppCompatActivity(),
     DatePickerDialog.OnDateSetListener {
-    // handle >> list + card with data >> confirm is delayed
-    // stop accepting to day tasks
     private lateinit var binding: ActivityCreateplanBinding
-    private val taskAdapter = TaskAdapter(this)
+    private val taskAdapter = TaskAdapter(null,null)
     private lateinit var mTasksViewModel: TasksViewModel
-    private lateinit var toDay: Calendar
-    private var tempDate = Calendar.getInstance()
+    private val toDay: Calendar = Calendar.getInstance()
+    private var tempDate: Calendar? = null
     private var editMode = false
     private lateinit var action: String
 
@@ -62,17 +52,18 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
         binding.multiRecyclerView.layoutManager = LinearLayoutManager(this.applicationContext)
         binding.multiRecyclerView.adapter = taskAdapter
 
-        binding.creatSmallTasksText.setOnClickListener(View.OnClickListener {
+        binding.DeadLine.setOnClickListener {
+            onCreateDialog().show()
+        }
+
+        binding.creatSmallTasksText.setOnClickListener {
             binding.addMinTask.visibility = View.VISIBLE
-            binding.cancellallMin.visibility = View.VISIBLE
             binding.creatSmallTasksText.visibility = View.GONE
-        })
-        binding.cancellallMin.setOnClickListener(View.OnClickListener {
-            taskAdapter.killCreation()
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        })
-        binding.addMinTask.setOnClickListener(View.OnClickListener {
+        }
+
+
+
+        binding.addMinTask.setOnClickListener {
 
             if (binding.mainCard.visibility == View.GONE) {
                 binding.mainCard.visibility = View.VISIBLE
@@ -81,11 +72,11 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
                 val info = binding.taskInfo.text.toString().trim()
                 val deadline = binding.DeadLine.text.toString().trim()
                 val headr = binding.taskHeader.text.toString().trim()
-                val groupName = binding.groupName.text.toString().trim()
+                val groupName = binding.groupNameEditText.text.toString().trim()
                 if (checkFields(headr, info)
                     && checkCurrentList(headr)
                 ) {
-                    if (tempDate != null && dateValid(tempDate)) {
+                    if (tempDate != null && dateValid(tempDate!!)) {
                         mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
                             if (!checkHeader(headr)) {
                                 taskAdapter.addToPlan(
@@ -99,12 +90,7 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
                                     taskInfo.text.clear()
                                     DeadLine.text = "Click to Set"
                                     remainTime.text = "Remain Time"
-                                    val view: View? = currentFocus
-                                    if (view != null) {
-                                        val imm: InputMethodManager =
-                                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                                        imm.hideSoftInputFromWindow(view.windowToken, 0)
-                                    }
+
 
                                 }
                                 tempDate = null
@@ -119,95 +105,41 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
                 }
             }
 
-        })
-        // this need to edit Make insure method all list has new name
-        binding.ConfirmTaskBtn.setOnClickListener(View.OnClickListener {
-            val info = binding.taskInfo.text.toString().trim()
-            val deadline = binding.DeadLine.text.toString().trim()
-            val header = binding.taskHeader.text.toString().trim()
-            val groupName = binding.groupName.text.toString().trim()
-            confirmOperation(info, deadline, header, groupName)
-        })
+        }
 
-        binding.groupNameCheck.setOnClickListener(View.OnClickListener {
+        binding.ConfirmTaskBtn.setOnClickListener {
+            addAllTasks()
+        }
+
+        binding.groupNameCheck.setOnClickListener {
             if (binding.groupNameCheck.isChecked) {
-                Log.d("ZZZZZZZZZZZ", "onCreate: isChecked")
-                val groupName = binding.groupName.text.toString().trim()
-                if (groupName.isNotEmpty()) {
-                    if (editMode && groupName == action) {
-                        Log.d("ZZZZZZZZZZZ", "onCreate: edite mode true")
-                        binding.multiRecyclerView.visibility = View.VISIBLE
-                        binding.groupNameCheck.isChecked = true
-                        binding.groupName.isEnabled = false
-                        binding.ConfirmTaskBtn.visibility = View.VISIBLE
-//                        binding.mainCard.visibility=View.VISIBLE
-                        binding.addMinTask.visibility = View.VISIBLE
-                    } else {
-                        Log.d("ZZZZZZZZZZZ", "onCreate: edite mode false")
-
-                        mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
-                            if (checkGroupName(groupName)) {
-                                Log.d("ZZZZZZZZZZZ", "onCreate: name existed")
-
-                                makeHint("This Group Name already existed")
-                                binding.groupNameCheck.isChecked = false
-
-
-                            } else {
-                                Log.d("ZZZZZZZZZZZ", "onCreate: name not existed")
-
-                                if (editMode) {
-                                    taskAdapter.updateGroup(groupName)
-                                }
-
-                                Log.d("ZZZZZZZZZZZ", "onCreate: final true  ")
-                                binding.multiRecyclerView.visibility = View.VISIBLE
-                                binding.groupName.isEnabled = false;
-                                binding.mainCard.visibility = View.VISIBLE
-                                binding.ConfirmTaskBtn.visibility = View.VISIBLE
-                                binding.creatSmallTasksText.visibility = View.VISIBLE
-                                // binding.groupNameCheck.isChecked = true
-
-
-                            }
-                        }
-
-                    }
-                    binding.groupName.error = null
-                } else {
-                    binding.groupName.error = "U Have to create name for the list "
-                    binding.groupNameCheck.isChecked = false
-                }
+                doGroupNameCheck()
             } else {
-                Log.d("ZZZZZZZZZZZ", "onCreate: isNotChecked")
                 binding.apply {
-                    cancellallMin.visibility = View.GONE
                     addMinTask.visibility = View.GONE
                     multiRecyclerView.visibility = View.GONE
-                    groupName.isEnabled = true;
+                    groupNameEditText.isEnabled = true;
                     mainCard.visibility = View.GONE
                     ConfirmTaskBtn.visibility = View.GONE
                     creatSmallTasksText.visibility = View.GONE
-                    groupName.isClickable = false
                     groupNameCheck.isChecked = false
                 }
             }
 
 
-        })
+        }
+
+        binding.groupNameEditText.setOnEditorActionListener { textView, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                doGroupNameCheck()
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
 
 
     }
 
-
-    override fun onStart() {
-        super.onStart()
-        toDay = Calendar.getInstance()
-        binding.DeadLine.setOnClickListener(View.OnClickListener {
-            onCreateDialog().show()
-        })
-
-    }
 
 
     private fun goToMain() {
@@ -222,9 +154,9 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
     private fun checkFields(header: String, info: String): Boolean {
         return if (header.isEmpty() || info.isEmpty()) {
             makeHint("Must fill empty fields")
-            return false
+            false
         } else {
-            return true
+            true
         }
     }
 
@@ -253,14 +185,11 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
         }
     }
 
-
     private fun onCreateDialog(): Dialog {
-        // Use the current date as the default date in the picker
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
-        // Create a new instance of DatePickerDialog and return it
         return DatePickerDialog(this, this, year, month, day)
 
     }
@@ -274,22 +203,21 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
         date.clear(Calendar.MINUTE)
     }
 
-
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+
         binding.DeadLine.error = null
         if (tempDate == null) {
             tempDate = Calendar.getInstance()
         }
-        tempDate.set(year, month, dayOfMonth)
-        var endDateString: String? = null
+        tempDate?.set(year, month, dayOfMonth)
         val newMonth = month + 1 // this to avoid pick index problem
-        endDateString = if (dayOfMonth <= 9) {
+        val endDateString = if (dayOfMonth <= 9) {
             "0$dayOfMonth/$newMonth/$year"
         } else {
             "$dayOfMonth/$newMonth/$year"
         }
 
-        when (tempDate.get(Calendar.DAY_OF_WEEK)) {
+        when (tempDate?.get(Calendar.DAY_OF_WEEK)) {
 
             1 -> binding.DeadLine.text = "Sun $endDateString"
             2 -> binding.DeadLine.text = "Mon $endDateString"
@@ -301,7 +229,6 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
         }
 
         binding.remainTime.text = "${daysLift(tempDate!!)} Days"
-        handelDaysLift(tempDate)
 
     }
 
@@ -312,80 +239,6 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
         return TimeUnit.MILLISECONDS.toDays(time).toInt()
     }
 
-    private fun handelDaysLift(endDate: Calendar) {
-        cleatTimeComponent(toDay)
-        cleatTimeComponent(endDate)
-        val calDiff = Calendar.getInstance()
-        calDiff.timeInMillis = endDate.timeInMillis - toDay.timeInMillis
-    }
-
-    private fun confirmOperation(info: String, deadline: String, headr: String, groupName: String) {
-        // with this code u can check if u can add main card >> will have delay and errror if main thread cant handle opreation
-//        if (checkFields(headr, info)) {
-//            if (tempDate != null && dateValid(tempDate!!)) {
-//                goToMain()
-//                mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
-//                    if (!checkHeader(headr)) {
-//                        taskAdapter.addToPlan(
-//                            TaskModel(
-//                                false, groupName,
-//                                headr,
-//                                info,
-//                                deadline,
-//                                tempDate!!
-//                            )
-//                        )
-//                        binding.apply {
-//                            taskHeader.text.clear()
-//                            taskInfo.text.clear()
-//                            DeadLine.text = "Click to Set"
-//                            remainTime.text = "Remain Time"
-//                        }
-//
-//
-//                        mTasksViewModel.addNewplan(taskAdapter.getPlan())
-//                    } else {
-//                        binding.taskHeader.error = "existed"
-//                        makeHint("you already have another task with This header ")
-//                    }
-//                }
-//
-//            } else binding.DeadLine.error = "Date Error"
-//        } else if (taskAdapter.getPlan().isNotEmpty()) {
-//            mTasksViewModel.addNewplan(taskAdapter.getPlan())
-//            goToMain()
-//        }
-
-
-        if (taskAdapter.getPlan().isNotEmpty()) {
-            mTasksViewModel.addNewplan(taskAdapter.getPlan())
-            goToMain()
-        } else if (taskAdapter.getPlan().isEmpty()
-            && checkFields(headr, info)
-        ) {
-            if (tempDate != null && dateValid(tempDate!!)) {
-
-                mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
-                    if (!checkHeader(headr)) {
-                        mTasksViewModel.addNewTask(
-                            TaskModel(
-                                false, groupName,
-                                headr,
-                                info,
-                                deadline,
-                                tempDate!!
-                            )
-                        )
-                        goToMain()
-                    } else {
-                        binding.taskHeader.error = "existed"
-                        makeHint("you already have another task with This header ")
-                    }
-                }
-
-            } else binding.DeadLine.error = "Date Error"
-        }
-    }
 
     private suspend fun checkGroupName(groupName: String): Boolean {
         return mTasksViewModel.checkGroupNameExisted(groupName)
@@ -396,10 +249,10 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
             taskAdapter.addTasks(tasks)
             taskAdapter.showGroup(action)
             binding.apply {
-                groupName.setText(action)
+                groupNameEditText.setText(action)
                 groupNameCheck.isChecked = true
                 groupNameCheck.isChecked
-                groupName.isEnabled = false
+                groupNameEditText.isEnabled = false
                 ConfirmTaskBtn.visibility = View.VISIBLE
                 addMinTask.visibility = View.VISIBLE
             }
@@ -407,78 +260,99 @@ class CreatePlanActivity : AppCompatActivity(), TaskAdapter.TasksListener,
         })
     }
 
-    override fun handleGroupClick(groupName: String) {
-
-        val intent = Intent(this, CreatePlanActivity::class.java)
-        intent.putExtra("group", groupName)
-        startActivity(intent)
 
 
-    }
+    private fun doGroupNameCheck() {
+        if (binding.groupNameEditText.text.toString().trim().isNotEmpty()) {
+            binding.groupNameEditText.error = null
+            val trim = binding.groupNameEditText.text.toString().trim()
+            if (editMode && trim == action) {
+                binding.multiRecyclerView.visibility = View.VISIBLE
+                binding.groupNameCheck.isChecked = true
+                binding.groupNameEditText.isEnabled = false
+                binding.ConfirmTaskBtn.visibility = View.VISIBLE
+                binding.addMinTask.visibility = View.VISIBLE
+            } else {
 
-    override fun handleLongPress(taskModel: TaskModel?) {
-        Toast.makeText(baseContext, "${taskModel!!.Done}", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun handlePress(taskModel: TaskModel?) {
-        Toast.makeText(baseContext,"No Action Allowed here",Toast.LENGTH_SHORT).show()
-
-
-    }
-
-    private fun oldcoded() {
-        val simpleCallBack: ItemTouchHelper.SimpleCallback =
-            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
-
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    if (direction == ItemTouchHelper.LEFT) {
-                        val holder = viewHolder as TaskAdapter.TaskHolder
-                        //holder.deleteTask()
-                        taskAdapter.notifyDataSetChanged()
+                mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
+                    if (checkGroupName(trim)) {
+                        makeHint("This Group Name already existed")
+                        binding.groupNameCheck.isChecked = false
+                    } else {
+                        binding.groupNameCheck.isChecked = true
+                        if (editMode) {
+                            taskAdapter.updateGroup(trim)
+                        }
+                        binding.multiRecyclerView.visibility = View.VISIBLE
+                        binding.groupNameEditText.isEnabled = false;
+                        binding.mainCard.visibility = View.VISIBLE
+                        binding.ConfirmTaskBtn.visibility = View.VISIBLE
+                        binding.creatSmallTasksText.visibility = View.VISIBLE
                     }
                 }
 
-                override fun onChildDraw(
-                    c: Canvas,
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    dX: Float,
-                    dY: Float,
-                    actionState: Int,
-                    isCurrentlyActive: Boolean
-                ) {
-                    RecyclerViewSwipeDecorator.Builder(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        dX,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                        .addBackgroundColor(R.color.red)
-                        .addActionIcon(R.drawable.ic_baseline_delete_24).create()
-                        .decorate()
-                    super.onChildDraw(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        dX,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                }
             }
+        } else {
+            binding.groupNameEditText.error = "required field"
+            binding.groupNameCheck.isChecked = false
+
+
+        }
+
 
     }
+
+
+    private fun addAllTasks() {
+        // case 1 >> header and info is empty .i will skip date and check for adaptor list (if not empty save to  Room DB)
+        if (binding.taskHeader.text.toString().trim().isEmpty() && binding.taskInfo.text.toString()
+                .trim().isEmpty()
+        ) {
+            if (taskAdapter.getPlan().isNotEmpty()) {
+                mTasksViewModel.viewModelScope.launch(Dispatchers.IO) {
+                    mTasksViewModel.addNewPlan(taskAdapter.getPlan())
+                }
+            }
+            goToMain()
+
+            // case 2 if header and info not empty .. i will check for date and current list (all valid add to adaptor list and push to Room DB)
+        } else if (checkFields(binding.taskHeader.text.toString().trim(), binding.taskInfo.text.toString().trim())) {
+            if (tempDate != null) {
+                if (dateValid(tempDate!!)) {
+                    if (taskAdapter.getPlan().isNotEmpty()&&checkCurrentList(binding.taskHeader.text.toString().trim())){
+                        // check for header and add to adaptor list and push to Room
+                        mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
+                            if (!checkHeader(binding.taskHeader.text.toString().trim())) {
+                                taskAdapter.addToPlan(
+                                    TaskModel(
+                                        false, binding.groupNameEditText.text.toString(),
+                                        binding.taskHeader.text.toString().trim(),
+                                        binding.taskInfo.text.toString().trim(),
+                                        binding.DeadLine.text.toString(),
+                                        tempDate!!
+                                    )
+                                )
+                                mTasksViewModel.addNewPlan(taskAdapter.getPlan())
+                                goToMain()
+                            } else {
+                                makeHint("Header already existed")
+                            }
+                        }
+                    }
+                }
+            } else {
+                // header and info existed with no date
+                binding.DeadLine.error = "Set Date"
+            }
+        } else {
+            // header or info existed
+            makeHint("field are required")
+
+        }
+
+    }
+
+
 }
 
 
