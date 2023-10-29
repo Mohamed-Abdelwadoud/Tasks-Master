@@ -319,7 +319,8 @@ class CreatePlanActivity : AppCompatActivity(),
         } else if (checkFields(binding.taskHeader.text.toString().trim(), binding.taskInfo.text.toString().trim())) {
             if (tempDate != null) {
                 if (dateValid(tempDate!!)) {
-                    if (taskAdapter.getPlan().isNotEmpty()&&checkCurrentList(binding.taskHeader.text.toString().trim())){
+                    // no need to check if -getPlan- is empty
+                    if (checkCurrentList(binding.taskHeader.text.toString().trim())){
                         // check for header and add to adaptor list and push to Room
                         mTasksViewModel.viewModelScope.launch(Dispatchers.Main) {
                             if (!checkHeader(binding.taskHeader.text.toString().trim())) {
