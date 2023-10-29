@@ -87,13 +87,14 @@ class MainActivity : AppCompatActivity(), TaskAdapter.SingleTaskListener,
             val intent = Intent(this, CreatePlanActivity::class.java)
             startActivity(intent)
         })
+
         binding.topLayout.filterICON.setOnClickListener(View.OnClickListener {
             if (filter) {
                 initUI()
                 filter = false
                 Toast.makeText(baseContext, "ALL Tasks", Toast.LENGTH_SHORT).show()
             } else {
-                taskAdaptor.doneFilter()
+                taskAdaptor.showNotDone()
                 Toast.makeText(baseContext, "NotDone Tasks", Toast.LENGTH_SHORT).show()
 
                 filter = true

@@ -10,11 +10,12 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
-class TaskAdapter(groupNameListener: GroupNameListener?,singleTaskListener: SingleTaskListener?) : RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
+class TaskAdapter(groupNameListener: GroupNameListener?, singleTaskListener: SingleTaskListener?) :
+    RecyclerView.Adapter<TaskAdapter.TaskHolder>() {
     private lateinit var mGroupNameListener: GroupNameListener
     private lateinit var mSingleTaskListener: SingleTaskListener
     private var tasks: ArrayList<TaskModel>? = null
-    private var createTasks: ArrayList<TaskModel> = ArrayList<TaskModel>()
+    private var createTasks: ArrayList<TaskModel> = ArrayList()
     private val toDay = Calendar.getInstance()
     private var mOnlyToday = false
 
@@ -22,10 +23,10 @@ class TaskAdapter(groupNameListener: GroupNameListener?,singleTaskListener: Sing
     init {
 
         if (groupNameListener != null) {
-            mGroupNameListener=groupNameListener
+            mGroupNameListener = groupNameListener
         }
         if (singleTaskListener != null) {
-            mSingleTaskListener=singleTaskListener
+            mSingleTaskListener = singleTaskListener
         }
         cleatTimeComponent(toDay)
         notifyDataSetChanged()
@@ -74,6 +75,12 @@ class TaskAdapter(groupNameListener: GroupNameListener?,singleTaskListener: Sing
 
     fun doneFilter() {
         tasks?.removeAll { !it.Done }
+        notifyDataSetChanged()
+
+    }
+
+    fun showNotDone() {
+        tasks?.removeAll { it.Done }
         notifyDataSetChanged()
 
     }
@@ -134,7 +141,8 @@ class TaskAdapter(groupNameListener: GroupNameListener?,singleTaskListener: Sing
             } else if (tasks?.get(position)?.Done == true) {
                 holder.binding.remainTime.text = "task is done"
             } else {
-                holder.binding.remainTime.text = "${tasks?.get(position)?.LastDate?.let { daysLift(it) }} Days left"
+                holder.binding.remainTime.text =
+                    "${tasks?.get(position)?.LastDate?.let { daysLift(it) }} Days left"
             }
 
 
@@ -211,12 +219,11 @@ class TaskAdapter(groupNameListener: GroupNameListener?,singleTaskListener: Sing
     }
 
 
-
-    interface GroupNameListener{
+    interface GroupNameListener {
         fun handleGroupClick(groupName: String)
     }
 
-    interface SingleTaskListener{
+    interface SingleTaskListener {
         fun handlePress(taskModel: TaskModel?)
 
     }
